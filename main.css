@@ -1,0 +1,152 @@
+body{
+    background-color: rgb(221, 221, 221);
+}
+
+.text_I{
+    display: inline-block;
+    background-color:  #ccc;
+    height: 40%;
+    width: 47%;
+    padding:  1%;
+    vertical-align: top;
+    border: solid 2px;
+}
+
+.mini_font{
+    font-size: 90%;
+}
+
+.text_I > textarea {
+    width: 100%;
+    height: 90%;
+    border: solid 3px;
+}
+
+.text_O{
+    position: relative;
+    display: inline-block;
+    background-color:  #ccc;
+    height: 40%;
+    width: 47%;
+    padding:  1%;
+    vertical-align: top;
+    border: solid 2px;
+}
+
+.text_O > #showArea {
+    background-color:  #FFF;
+    position: absolute;
+    width: 95%;
+    height: 85%;
+    border: solid 3px;
+}
+
+._head{
+    font-size: 120%;
+    font-family: fantasy;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file_input{
+    text-align: center;
+}
+
+.file_input > .file_inputArea{
+    background-color: whitesmoke;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 20%;
+    width: 40%;
+    border: solid 4px;
+    border-color: #333333a4;
+    vertical-align: bottom;
+}
+
+.file_input > .file_inputArea > .file_areaText{
+    display: block;
+    text-align: center;
+    font-size: 110%;
+    color: rgb(128, 128, 128);
+    margin-top: 5%;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.file_input > .file_inputArea > .file_areaText > .file_areaButton{
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    padding: 0.3em 1em;
+    text-decoration: none;
+    background: #61bbf3;
+    color: white;
+    border: solid 2px #61bbf3;
+    border-radius: 3px;
+    transition: .4s;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+  
+.file_input > .file_inputArea > .file_areaText > .file_areaButton:hover {
+    background: #47a4dd;
+    color: white;
+}
+
+input[type="submit"] {
+    display: none;
+}
+
+.file_input > .file_submitButton{
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.file_input > .file_submitButton > .alt_submit_button{
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    padding: 0.3em 1em;
+    text-decoration: none;
+    background: #c9c9c9;
+    color: white;
+    border: solid 2px #747474;
+    border-radius: 3px;
+    transition: .4s;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.file_input > .file_submitButton > .alt_submit_button:hover {
+    background: #747474;
+    color: white;
+}
+
+.file_lists{
+    display: inline-block;
+    border: solid 2px #000;
+}
+
+.file_lists > li{
+    list-style-type: none;
+}
+.file_lists > li > a{
+    display: block;
+    text-align: center;
+    padding: 0.3em 1em;
+    text-decoration: none;
+    background: #c9c9c9;
+    color: white;
+    border: solid 2px #747474;
+    border-radius: 3px;
+    transition: .4s;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}

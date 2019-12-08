@@ -1,12 +1,126 @@
 <html>
     <head>
-        <script type="text/javascript" src="main.js"></script>
+        <style type="text/css" id="css_content">
+            @import url(main.css);
+        </style>
     </head>
     <body>
-        <div id = "ip-info"></div>
-        <p>
-            TEXT: <br>
+        <div class="text_I">
+            <span class="_head">TEXT: </span><br>
             <textarea id = "sendText" name="text" rows="4" cols="40"></textarea>
-        </p>
+        </div>
+        <div class="text_O">
+            <span class="_head">OUTPUT: </span><br>
+            <div id ="showArea"></div></div>
+        <br>
+        <br>
+        <form id ="file_form" action="/" method="post" enctype="multipart/form-data">
+            <div class="file_input">
+                <div class="file_inputArea" id="file_dragArea">
+                    <div class="file_areaText">
+                        Drop your file
+                        <p class="mini_font">or</p>
+                        <label for="file_upload" class="file_areaButton">choose the file</label>
+                    </div>
+                </div>
+                <input type="file" name="example" size="30" id="file_upload">
+                <div class="file_lists" id="file_list_show"></div>
+            </div>
+        </form>
+
+        <script>
+            var fileArea;
+            var fileInput;
+            var fileForm;
+            var xhr;
+            var xhr_file;
+            var form;
+            var form_data;
+            var textArea_Out;
+            var fileNameOutput
+
+            window.onload = function(){
+                fileArea = document.getElementById('file_dragArea');
+                fileInput = document.getElementById('file_upload');
+                fileNameOutput = document.getElementById('file_list_show');
+                fileForm = document.getElementById("file_form");
+
+                fileArea.addEventListener('dragover', function(evt){
+                    evt.preventDefault();
+                    fileArea.classList.add('dragover');
+                });
+
+                fileArea.addEventListener('dragleave', function(evt){
+                    evt.preventDefault();
+                    fileArea.classList.remove('dragover');
+                });
+
+                fileArea.addEventListener('drop', function(evt){
+                    evt.preventDefault();
+                    fileArea.classList.remove('dragenter');
+                    var files = evt.dataTransfer.files;
+                    fileInput.files = files;
+                    var event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                });
+
+                fileInput.addEventListener('change', function(evt) {
+                    //fileNameOutput.textContent  = evt.target.value.split('\\').pop();
+                    var _putted_file = new FormData(fileForm);
+                    _put_file(_putted_file);
+                }, false);
+
+                form = document.getElementById('sendText');
+                textArea_Out  = document.getElementById('showArea');
+                form_data = form.value;
+                xhr_file = new XMLHttpRequest();
+                xhr = new XMLHttpRequest();
+                setInterval(reload, 2000);
+            }
+            
+            function reload(){
+                if (!(document.getElementById('sendText').value == "")  && !(document.getElementById('sendText').value == form_data)){
+                    xhr.open('POST', '/');
+                    xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded');
+                    form_data = form.value;
+                    xhr.send('text=' + this.form_data);
+
+                    xhr.onreadystatechange = function() {
+                        if(xhr.readyState === 4 && xhr.status === 200) {
+                            textArea_Out.textContent  = xhr.responseText;
+                        }
+                    }
+                }
+            }
+
+            function _put_file(file_data){
+                xhr_file.open('POST', '/');
+                //multipart/form-data is spilited by boudary, and the boudndary-data is shown on requestHeader.
+                //if set a requestheader manually, the boudeary-data can't be setted. then never send the boudary-data.
+                //So, if you wanna send files (include only one file),don't set a r-header manually, and then JS will set it autolly
+                xhr_file.send(file_data);
+
+                xhr_file.onreadystatechange = function() {
+                    if(xhr_file.readyState === 4 && xhr_file.status === 200) {
+                        var fileNames = xhr_file.responseText.split(',');
+                        var elemLi = [];
+                        for(var i of fileNames){
+                            var _tmpElement = document.createElement('li');
+                            var _tmpTmp = document.createElement('a');
+                            _tmpTmp.textContent = i;
+                            _tmpTmp.href = i;
+                            _tmpTmp.setAttribute('download',i);
+                            _tmpElement.appendChild(_tmpTmp);
+                            elemLi.push(_tmpElement);
+                        }
+
+                        for(var j of elemLi){
+                            fileNameOutput.appendChild(j);
+                        }
+                    }
+                }
+            }
+        </script>
+
     </body>
 </html>
