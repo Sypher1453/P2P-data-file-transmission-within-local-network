@@ -10,7 +10,7 @@ import cgi
 from bs4 import BeautifulSoup
 import io
 from PIL import Image
-import base64
+#import base64
 import os
 
 class HandleRequests(http.server.BaseHTTPRequestHandler):
@@ -27,6 +27,9 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
 
     def _set_datasPATH(self,filePath):
         self.dataFilePath = filePath
+    
+    def _set_configFileNames(self,names):
+        self.configFileNames = names
 
     def _read_ContentsName_inDataPATH(self):
         files = os.listdir(self.dataFilePath)
@@ -94,17 +97,27 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
         # browser reloading request the same method of domain-named files method (if the file was loaded by post, then request post-method,if get, then get-method)
         print(self.path)
         print(self.headers)
-        if self.path.endswith(".css"):
+        if not ("." + self.path) in self.configFileNames:
+            request_PATH = self.dataFilePath + self.path
+        else:
+            request_PATH = "./" + self.path
+
+        if request_PATH.endswith(".css") or request_PATH.endswith(".txt"):
             self.send_response(200)
-            self.send_header('Content-type', 'text/css')
+            self.send_header('Content-type', 'text/' + request_PATH[-3:])
             self.end_headers()
-            self.wfile.write(self._read_FILE_onRoot_as_bytes(self.path[1:]))
-        elif self.path.endswith(".png"):
+            self.wfile.write(self._read_FILE_onRoot_as_bytes(request_PATH))
+        elif request_PATH.endswith(".png"):
             self.send_response(200)
             self.send_header('Content-type', 'image/png')
             self.end_headers()
-            self.wfile.write(base64.b64encode(self._read_FILE_onRoot_as_bytes("adafafdafa.png")))
-        else:
+            self.wfile.write(self._read_FILE_onRoot_as_bytes(request_PATH))
+        elif request_PATH.endswith(".zip"):
+            self.send_response(200)
+            self.send_header('Content-type', 'application/zip')
+            self.end_headers()
+            self.wfile.write(self._read_FILE_onRoot_as_bytes(request_PATH))
+        elif self.path is '/':
             global _text
             #self._read_Content_inTmpFILE()
             get_soup = BeautifulSoup(self.html_show, 'html.parser')
@@ -114,11 +127,15 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
             ##self._set_Content_to_HTML()
             self._set_headers()
             self.wfile.write(self.html_show.encode())
+        else:
+            self.send_response(200)
+            self.send_header('Content-type', 'octet-stream')
+            self.end_headers()
+            self.wfile.write(self._read_FILE_onRoot_as_bytes(request_PATH))
 
 
         
     def do_POST(self):
-        global _text
         file_names = []
         ctype, pdict = cgi.parse_header(self.headers['content-type'])
         if ctype == 'multipart/form-data':
@@ -135,7 +152,7 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
                     img.save(self.dataFilePath + f.filename,f.type[6:])
                 elif 'text' in f.type:
                     self._write_FILE_onRoot(self.dataFilePath + f.filename,f.value.decode())
-                elif 'x-zip-compressed' in f.type:
+                elif ('zip' in f.type):
                     self._write_FILE_onRoot_as_bytes(self.dataFilePath + f.filename,f.value)
                     
         elif ctype == 'application/x-www-form-urlencoded':
@@ -148,7 +165,7 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
         if ctype == 'application/x-www-form-urlencoded':
             #print(postvars['text'][0])
 
-            _text = postvars['text'][0]
+            HandleRequests._text = postvars['text'][0]
             ##
             #soup = BeautifulSoup(self.html_show, 'html.parser')
             ###_text = soup.find(id="showArea")
@@ -262,6 +279,9 @@ css_content = load_html(css_path)
 path = 'info'
 PORT = 8000
 directly_path = "./data/"
+
+configFileNames = [html_path,css_path]
+
 os.makedirs(directly_path, exist_ok=True)
 
 #Handler = http.server.SimpleHTTPRequestHandler
@@ -269,6 +289,7 @@ Handler = HandleRequests
 Handler._set_content(Handler,html_content)
 Handler._set_css(Handler,css_content)
 Handler._set_datasPATH(Handler,directly_path)
+Handler._set_configFileNames(Handler,configFileNames)
 
 httpd = socketserver.TCPServer(("", PORT), Handler)
 #thread_input = threading.Thread(target=inputing_start) #target�͊֐����̂�.()������Ɗ֐������s����,thread�ɓo�^����Ȃ�,������args�Ƀ^�v����
